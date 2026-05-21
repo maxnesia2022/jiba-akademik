@@ -1,6 +1,7 @@
-<?
-?>
-<?
+<?php
+// =========================================================================
+// INIT & INCLUDE FILES
+// =========================================================================
 require_once('../include/errorhandler.php');
 require_once('../include/db_functions.php');
 require_once('../include/sessioninfo.php');
