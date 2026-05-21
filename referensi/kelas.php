@@ -35,12 +35,13 @@ $op = isset($_REQUEST['op']) ? $_REQUEST['op'] : '';
 if ($op == "dw8dxn8w9ms8zs22") {
     $sql = "UPDATE kelas SET aktif = '$_REQUEST[newaktif]' WHERE replid = '$_REQUEST[replid]' ";
     QueryDb($sql);
+    echo "<script>window.location.href='kelas.php?action=view&departemen=".urlencode($departemen)."&tahunajaran=$tahunajaran&tingkat=$tingkat&page=$page&hal=$hal&varbaris=$varbaris&urut=$urut&urutan=$urutan';</script>";
+    exit;
 } 
 else if ($op == "xm8r389xemx23xb2378e23") {
     $sql = "DELETE FROM kelas WHERE replid = '$_REQUEST[replid]'";
     QueryDb($sql);
     
-    // Redirect setelah hapus
     echo "<script>window.location.href='kelas.php?action=view&departemen=".urlencode($departemen)."&tahunajaran=$tahunajaran&tingkat=$tingkat&page=$page&hal=$hal&varbaris=$varbaris';</script>";
     exit;
 }
@@ -73,11 +74,6 @@ if (!empty($tahunajaran)) {
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script type="text/javascript">
-        function change_dep() {
-            var departemen = document.getElementById("departemen").value;
-            window.location.href = "kelas.php?departemen=" + encodeURIComponent(departemen);
-        }
-
         function change_filter() {
             var departemen = document.getElementById("departemen").value;
             var tingkat = document.getElementById("tingkat").value;
@@ -97,7 +93,7 @@ if (!empty($tahunajaran)) {
             window.location.href = "kelas.php?action=view&departemen=" + encodeURIComponent(departemen) + "&tahunajaran=" + encodeURIComponent(tahunajaran) + "&tingkat=" + encodeURIComponent(tingkat);
         }
 
-        function carisiswa(replid) {	
+        function carisiswa(replid) {    
             window.open('../library/lihatsiswa.php?replid='+replid, 'LihatSiswa','width=790,height=650,resizable=1,scrollbars=1');
         }
 
@@ -136,7 +132,7 @@ if (!empty($tahunajaran)) {
             }
         }
 
-        function change_urut(urut_baru, urutan_lama) {		
+        function change_urut(urut_baru, urutan_lama) {        
             var departemen = document.getElementById('departemen').value;
             var tahunajaran = document.getElementById('tahunajaran').value;
             var tingkat = document.getElementById('tingkat').value;
@@ -201,13 +197,13 @@ if (!empty($tahunajaran)) {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
                 <div>
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 block">Departemen</label>
-                    <select id="departemen" onChange="change_dep()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                    <select id="departemen" onChange="change_filter()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
                         <?php 
                         $dep_list = getDepartemen(SI_USER_ACCESS());    
                         foreach($dep_list as $value) {
                             if ($departemen == "") $departemen = $value; 
                             $selected = ($value == $departemen) ? "selected" : "";
-                            echo "<option value=\"$value\" $selected>$value</option>";
+                            echo "<option value="$value" $selected>$value</option>";
                         } ?>
                     </select>
                 </div>
@@ -222,7 +218,7 @@ if (!empty($tahunajaran)) {
                             if ($tahunajaran == "") $tahunajaran = $row_ta['replid'];
                             $ada = $row_ta['aktif'] ? "(Aktif)" : "";
                             $selected = ($row_ta['replid'] == $tahunajaran) ? "selected" : "";
-                            echo "<option value=\"{$row_ta['replid']}\" $selected>{$row_ta['tahunajaran']} $ada</option>";
+                            echo "<option value="{$row_ta['replid']}" $selected>{$row_ta['tahunajaran']} $ada</option>";
                         } ?>
                     </select>
                 </div>
@@ -236,7 +232,7 @@ if (!empty($tahunajaran)) {
                         while ($row_tkt = mysqli_fetch_array($res_tkt)) {
                             if ($tingkat == "") $tingkat = $row_tkt['replid'];
                             $selected = ($row_tkt['replid'] == $tingkat) ? "selected" : "";
-                            echo "<option value=\"{$row_tkt['replid']}\" $selected>{$row_tkt['tingkat']}</option>";
+                            echo "<option value="{$row_tkt['replid']}" $selected>{$row_tkt['tingkat']}</option>";
                         } ?>
                     </select>
                 </div>

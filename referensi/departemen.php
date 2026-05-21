@@ -1,6 +1,4 @@
-<?
-?>
-<?
+<?php
 require_once('../include/sessioninfo.php');
 require_once('../include/db_functions.php');
 require_once('../include/sessioninfo.php');
@@ -39,8 +37,6 @@ if ($op == "xm8r389xemx23xb2378e23")
     <!-- Google Font Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" type="text/css" href="../style/tooltips.css">
-    <script language="javascript" src="../script/tooltips.js"></script>
     <script language="javascript" src="../script/tables.js"></script>
     <script language="javascript" src="../script/tools.js"></script>
     <script language="javascript">
@@ -104,7 +100,6 @@ if ($op == "xm8r389xemx23xb2378e23")
         <!-- Header & Breadcrumb -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-green-100 shadow-sm flex-1">
-                <!-- Background icon emerald-900 -->
                 <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-lg shadow-emerald-900/30">
                     <i class="fa-solid fa-building-user text-2xl"></i>
                 </div>

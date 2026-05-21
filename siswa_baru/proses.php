@@ -1,6 +1,4 @@
-<?
- ?>
-<?
+<?php
 require_once('../include/errorhandler.php');
 require_once('../include/sessioninfo.php');
 require_once('../include/common.php');
@@ -9,374 +7,277 @@ require_once('../include/db_functions.php');
 require_once('../library/departemen.php');
 require_once('../cek.php');
 
-$departemen = "";
-if (isset($_REQUEST['departemen']))
-	$departemen = $_REQUEST['departemen'];
+$departemen = isset($_REQUEST['departemen']) ? $_REQUEST['departemen'] : '';
+$varbaris   = isset($_REQUEST['varbaris']) ? $_REQUEST['varbaris'] : 10;
+$page       = isset($_REQUEST['page']) ? $_REQUEST['page'] : 0;
+$hal        = isset($_REQUEST['hal']) ? $_REQUEST['hal'] : 0;
+$urut       = isset($_REQUEST['urut']) ? $_REQUEST['urut'] : "p.proses";    
+$urutan     = isset($_REQUEST['urutan']) ? $_REQUEST['urutan'] : "ASC";    
 
-$varbaris=10;
-if (isset($_REQUEST['varbaris']))
-	$varbaris = $_REQUEST['varbaris'];
-
-$page=0;
-if (isset($_REQUEST['page']))
-	$page = $_REQUEST['page'];
-	
-$hal=0;
-if (isset($_REQUEST['hal']))
-	$hal = $_REQUEST['hal'];
-
-$urut = "p.proses";	
-if (isset($_REQUEST['urut']))
-	$urut = $_REQUEST['urut'];	
-
-$urutan = "ASC";	
-if (isset($_REQUEST['urutan']))
-	$urutan = $_REQUEST['urutan'];
-
-$op = $_REQUEST['op'];
+$op = isset($_REQUEST['op']) ? $_REQUEST['op'] : '';
 
 if ($op == "dw8dxn8w9ms8zs22") {
-	OpenDb();
-	$sql = "UPDATE prosespenerimaansiswa SET aktif = '$_REQUEST[newaktif]' WHERE replid = '$_REQUEST[replid]' ";
-	QueryDb($sql);
-	$sql1 = "UPDATE prosespenerimaansiswa SET aktif = 0 WHERE replid <> '$_REQUEST[replid]' AND departemen = '$_REQUEST[departemen]'";
-	QueryDb($sql1);
-	CloseDb();
+    OpenDb();
+    $sql = "UPDATE prosespenerimaansiswa SET aktif = '$_REQUEST[newaktif]' WHERE replid = '$_REQUEST[replid]' ";
+    QueryDb($sql);
+    $sql1 = "UPDATE prosespenerimaansiswa SET aktif = 0 WHERE replid <> '$_REQUEST[replid]' AND departemen = '$_REQUEST[departemen]'";
+    QueryDb($sql1);
+    CloseDb();
+    echo "<script>window.location.href='proses.php?departemen=".urlencode($departemen)."&page=$page&hal=$hal&varbaris=$varbaris&urut=$urut&urutan=$urutan';</script>";
+    exit;
 } else if ($op == "xm8r389xemx23xb2378e23") {
-	OpenDb();
-	$sql = "DELETE FROM prosespenerimaansiswa WHERE replid = '$_REQUEST[replid]'";
-	QueryDb($sql);
-	CloseDb();	
-$page=0;
-$hal=0;
-}	
+    OpenDb();
+    $sql = "DELETE FROM prosespenerimaansiswa WHERE replid = '$_REQUEST[replid]'";
+    QueryDb($sql);
+    CloseDb();    
+    echo "<script>window.location.href='proses.php?departemen=".urlencode($departemen)."&varbaris=$varbaris&urut=$urut&urutan=$urutan';</script>";
+    exit;
+}    
 OpenDb();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<link rel="stylesheet" type="text/css" href="../style/style.css">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Proses Penerimaan Siswa Baru</title>
-<script src="../script/SpryValidationSelect.js" type="text/javascript"></script>
-<link href="../script/SpryValidationSelect.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="../style/tooltips.css">
-<script language="javascript" src="../script/tooltips.js"></script>
-<script language="javascript" src="../script/tables.js"></script>
-<script language="javascript" src="../script/tools.js"></script>
-<script language="javascript">
-function tambah() {
-	var departemen = document.getElementById('departemen').value;
-	newWindow('proses_add.php?departemen='+departemen, 'TambahProsesPenerimaanSiswaBaru','500','327','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function refresh() {	
-	var departemen = document.getElementById('departemen').value;
-	document.location.href="proses.php?departemen="+departemen;
-}
-
-function tampil() {
-	var departemen = document.getElementById('departemen').value;
-	document.location.href = "proses.php?departemen="+departemen+"&varbaris=<?=$varbaris?>";
-}
-
-function setaktif(replid, aktif) {
-	var msg;
-	var newaktif;
-	var departemen = document.getElementById('departemen').value;
-	
-	if (aktif == 1) {
-		msg = "Apakah anda yakin akan mengubah proses ini menjadi TIDAK AKTIF?";
-		newaktif = 0;
-	} else	{	
-		msg = "Apakah anda yakin akan mengubah proses ini menjadi AKTIF?";
-		newaktif = 1;
-	}
-	
-	if (confirm(msg)) 
-		document.location.href = "proses.php?op=dw8dxn8w9ms8zs22&replid="+replid+"&newaktif="+newaktif+"&departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&page=<?=$page?>&hal=<?=$hal?>&varbaris=<?=$varbaris?>";
-}
-
-function edit(replid) {
-	newWindow('proses_edit.php?replid='+replid, 'UbahProsesPenerimaanSiswaBaru','500','327','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function hapus(replid) {
-	var departemen = document.getElementById('departemen').value;
-	if (confirm("Apakah anda yakin akan menghapus proses ini?"))
-		document.location.href = "proses.php?op=xm8r389xemx23xb2378e23&replid="+replid+"&departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&page=<?=$page?>&hal=<?=$hal?>&varbaris=<?=$varbaris?>";
-}
-
-function cetak() {
-	var departemen = document.getElementById('departemen').value;
-	var total=document.getElementById("total").value;
-	
-	newWindow('proses_cetak.php?departemen='+departemen+'&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris=<?=$varbaris?>&page=<?=$page?>&total='+total, 'CetakProsesPenerimaanSiswaBaru','790','650','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function change_urut(urut,urutan) {			
-	var departemen = document.getElementById("departemen").value;	
-	var varbaris=document.getElementById("varbaris").value;
-	
-	if (urutan =="ASC"){
-		urutan="DESC"
-	} else {
-		urutan="ASC"
-	}
-	
-	document.location.href = "proses.php?urutan="+urutan+"&urut="+urut+"&departemen="+departemen+"&page=<?=$page?>&hal=<?=$hal?>&varbaris="+varbaris;
-}
-
-function change_page(page) {
-	var departemen=document.getElementById("departemen").value;
-	var varbaris=document.getElementById("varbaris").value;
-	
-	document.location.href="proses.php?departemen="+departemen+"&page="+page+"&hal="+page+"&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris="+varbaris;
-}
-
-function change_hal() {
-	var departemen = document.getElementById("departemen").value;
-	var hal = document.getElementById("hal").value;
-	var varbaris=document.getElementById("varbaris").value;
-	
-	document.location.href="proses.php?departemen="+departemen+"&page="+hal+"&hal="+hal+"&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris="+varbaris;
-}
-
-function change_baris() {
-	var departemen = document.getElementById("departemen").value;
-	var varbaris=document.getElementById("varbaris").value;
-	document.location.href="proses.php?departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris="+varbaris;
-}
-
-</script>
-</head>
-
-<body onload="document.getElementById('departemen').focus()">
-
-<table border="0" width="100%" height="100%">
-<!-- TABLE BACKGROUND IMAGE -->
-<tr><td align="center" valign="top" background="../images/b_proses.png" style="margin:0;padding:0;background-repeat:no-repeat;">
-
-<table border="0" width="100%" align="center">
-<!-- TABLE CENTER -->
-<tr>
-  	<td align="left" valign="top">
-
-	<table border="0"width="95%" align="center">
-    <!-- TABLE TITLE -->
-    <tr>
-        <td align="right"><font size="4" face="Verdana, Arial, Helvetica, sans-serif" style="background-color:#ffcc66">&nbsp;</font>&nbsp;<font size="4" face="Verdana, Arial, Helvetica, sans-serif" color="Gray">Proses Penerimaan Siswa Baru</font></td>
-    </tr>
-    <tr>
-        <td align="right"><a href="../siswa_baru.php" target="content">
-          <font size="1" color="#000000"><b>Penerimaan Siswa Baru</b></font></a>&nbsp>&nbsp 
-          <font size="1" color="#000000"><b>Proses Penerimaan Siswa Baru</b></font>
-        </td>
-    </tr>
-    <tr>
-        <td align="left">&nbsp;</td>
-        </tr>
-	</table>
-	<br /><br />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proses Penerimaan Siswa Baru</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <table border="0" cellpadding="0" cellspacing="0" width="95%" align="center">
-    <!-- TABLE LINK -->
-    <tr>
-    <td align="right" width="35%">
-    	<strong>Departemen&nbsp;</strong>
-            <select name="departemen" id="departemen" onChange="tampil()">
-              <?	$dep = getDepartemen(SI_USER_ACCESS());    
-	foreach($dep as $value) {
-		if ($departemen == "")
-			$departemen = $value; ?>
-              <option value="<?=$value ?>" <?=StringIsSelected($value, $departemen) ?> > 
-                <?=$value ?> 
-                </option>
-                <?	} ?>
-            </select>
-    </td>
-<? 
-    OpenDb();
-	//$sql = "SELECT p.replid, p.proses, p.keterangan, p.aktif, p.kodeawalan, COUNT(c.replid) AS jumlah FROM prosespenerimaansiswa p, calonsiswa c WHERE p.departemen='$departemen' AND c.idproses = p.replid AND c.aktif = 1 GROUP BY c.idproses ORDER BY $urut $urutan"; 
-	$sql_tot = "SELECT p.replid, p.proses, p.keterangan, p.aktif, p.kodeawalan FROM prosespenerimaansiswa p WHERE p.departemen='$departemen' "; 
-	$result_tot = QueryDb($sql_tot);
-	$total = ceil(mysqli_num_rows($result_tot)/(int)$varbaris);
-	$jumlah = mysqli_num_rows($result_tot);
-						
-	$sql = "SELECT p.replid, p.proses, p.keterangan, p.aktif, p.kodeawalan FROM prosespenerimaansiswa p WHERE p.departemen='$departemen' ORDER BY $urut $urutan LIMIT ".(int)$page*(int)$varbaris.",$varbaris"; 						
-	$akhir = ceil($jumlah/5)*5;
-	
-	$result = QueryDb($sql);
-	if (@mysqli_num_rows($result) > 0){
-		
-?>
-    <input type="hidden" name="total" id="total" value="<?=$total?>"/>	
-    <td align="right">
-    <a href="#" onClick="refresh()"><img src="../images/ico/refresh.png" border="0" onMouseOver="showhint('Refresh!', this, event, '50px')" />&nbsp;Refresh</a>&nbsp;&nbsp;
+    <script language="javascript" src="../script/tools.js"></script>
+    <script language="javascript">
+    function tambah() {
+        var departemen = document.getElementById('departemen').value;
+        window.open('proses_add.php?departemen='+departemen, 'TambahProsesPenerimaanSiswaBaru','width=500,height=330,resizable=1,scrollbars=1');
+    }
 
-    <a href="JavaScript:cetak()"><img src="../images/ico/print.png" border="0" onMouseOver="showhint('Cetak!', this, event, '50px')"/>&nbsp;Cetak</a>&nbsp;&nbsp;
-<?	//	if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-	    <a href="JavaScript:tambah()"><img src="../images/ico/tambah.png" border="0" onMouseOver="showhint('Tambah!', this, event, '50px')" />&nbsp;Tambah Proses</a>
-<?		//} ?>    
-    </td></tr>
-    </table><br />
-       
-    <table class="tab" id="table" border="1" style="border-collapse:collapse" width="95%" align="center" bordercolor="#000000">
-    <!-- TABLE CONTENT -->
-    <tr height="30" class="header" align="center">
-    	<td width="4%">No</td>
-        <td width="18%" onMouseOver="background='../style/formbg2agreen.gif';height=30;" onMouseOut="background='../style/formbg2.gif';height=30;" background="../style/formbg2.gif" onClick="change_urut('p.proses','<?=$urutan?>')" style="cursor:pointer;">Proses <?=change_urut('p.proses',$urut,$urutan)?></td> 
-        <td width="15%" onMouseOver="background='../style/formbg2agreen.gif';height=30;" onMouseOut="background='../style/formbg2.gif';height=30;" background="../style/formbg2.gif" onClick="change_urut('p.kodeawalan','<?=$urutan?>')" style="cursor:pointer;">Kode Awalan <?=change_urut('p.kodeawalan',$urut,$urutan)?></td>
-        <td width="10%">Jumlah</td>
-        <td width="*" >Keterangan</td>
-        <td width="10%" onMouseOver="background='../style/formbg2agreen.gif';height=30;" onMouseOut="background='../style/formbg2.gif';height=30;" background="../style/formbg2.gif" onClick="change_urut('p.aktif','<?=$urutan?>')" style="cursor:pointer;">Status <?=change_urut('p.aktif',$urut,$urutan)?></td>
-        <?	//if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <td width="8%">&nbsp;</td>
-        <? //	} ?>
-    </tr>
-<?
-		if ($page==0)
-			$cnt = 0;
-		else 
-			$cnt = (int)$page*(int)$varbaris;
-			
-		while ($row = @mysqli_fetch_array($result)) {
-			$sql1 = "SELECT COUNT(c.replid) AS jumlah FROM calonsiswa c WHERE c.idproses = '$row[replid]' AND c.aktif = 1"; 
-			$result1 = QueryDb($sql1);	
-			$row1 = mysqli_fetch_array($result1);
-?>			
-    <tr>   	
-       	<td height="25" align="center"><?=++$cnt ?></td>
-        <td height="25"><?=$row['proses']?></td>
-        <td height="25"><?=$row['kodeawalan']?></td>
-        <td height="25" align="center"><?=$row1['jumlah']?></td>
-        <td height="25"><?=$row['keterangan']?></td>        
-        <td height="25" align="center">
-<?		if (SI_USER_LEVEL() == $SI_USER_STAFF) {  
-			if ($row['aktif'] == 1) { ?> 
-            	<img src="../images/ico/aktif.png" border="0" onMouseOver="showhint('Status Aktif!', this, event, '80px')"/>
-<?			} else { ?>                
-				<img src="../images/ico/nonaktif.png" border="0" onMouseOver="showhint('Status Tidak Aktif!', this, event, '80px')"/>
-<?			}
-		} else { 
-			if ($row['aktif'] == 1) { ?>
-				<a href="JavaScript:setaktif(<?=$row['replid'] ?>, <?=$row['aktif'] ?>)"><img src="../images/ico/aktif.png" border="0" onMouseOver="showhint('Status Aktif!', this, event, '80px')"/></a>
-<?			} else { ?>
-				<a href="JavaScript:setaktif(<?=$row['replid'] ?>, <?=$row['aktif'] ?>)"><img src="../images/ico/nonaktif.png" border="0" onMouseOver="showhint('Status Tidak Aktif!', this, event, '80px')"/></a>
-<?			} //end if
-		} //end if ?>        </td>
-		
+    function refresh() {    
+        window.location.reload();
+    }
 
-        <td height="25" align="center">
-            <a title="Edit" href="JavaScript:edit(<?=$row['replid'] ?>)"><img src="../images/ico/ubah.png" border="0" onMouseOver="showhint('Ubah Proses Penerimaan!', this, event, '80px')" /></a>&nbsp;
-<?		if (SI_USER_LEVEL() != $SI_USER_STAFF) {  ?> 
-            <a title="Hapus" href="JavaScript:hapus(<?=$row['replid'] ?>)"><img src="../images/ico/hapus.png" border="0" onMouseOver="showhint('Hapus Proses Penerimaan!', this, event, '80px')"/></a>
-        </td>
-<?		} ?>
-    </tr>
-<?	} 
-	CloseDb(); ?>	
-    
-    <!-- END TABLE CONTENT -->
-    </table>
-    <script language='JavaScript'>
-	    Tables('table', 1, 0);
+    function tampil() {
+        var departemen = document.getElementById('departemen').value;
+        document.location.href = "proses.php?departemen="+departemen+"&varbaris=<?=$varbaris?>";
+    }
+
+    function setaktif(replid, aktif) {
+        var departemen = document.getElementById('departemen').value;
+        var msg = (aktif == 1) ? "Non-aktifkan proses ini?" : "Aktifkan proses ini?";
+        var newaktif = (aktif == 1) ? 0 : 1;
+        
+        if (confirm(msg)) 
+            document.location.href = "proses.php?op=dw8dxn8w9ms8zs22&replid="+replid+"&newaktif="+newaktif+"&departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&page=<?=$page?>&hal=<?=$hal?>&varbaris=<?=$varbaris?>";
+    }
+
+    function edit(replid) {
+        window.open('proses_edit.php?replid='+replid, 'UbahProsesPenerimaanSiswaBaru','width=500,height=330,resizable=1,scrollbars=1');
+    }
+
+    function hapus(replid) {
+        var departemen = document.getElementById('departemen').value;
+        if (confirm("Apakah anda yakin akan menghapus proses ini?"))
+            document.location.href = "proses.php?op=xm8r389xemx23xb2378e23&replid="+replid+"&departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&page=<?=$page?>&hal=<?=$hal?>&varbaris=<?=$varbaris?>";
+    }
+
+    function cetak() {
+        var departemen = document.getElementById('departemen').value;
+        var total = document.getElementById("total") ? document.getElementById("total").value : 0;
+        window.open('proses_cetak.php?departemen='+departemen+'&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris=<?=$varbaris?>&page=<?=$page?>&total='+total, 'CetakProsesPenerimaanSiswaBaru','width=790,height=650,resizable=1,scrollbars=1');
+    }
+
+    function change_urut(urut,urutan) {            
+        var departemen = document.getElementById("departemen").value;    
+        var varbaris=document.getElementById("varbaris").value;
+        
+        if (urutan =="ASC") urutan="DESC"; else urutan="ASC";
+        
+        document.location.href = "proses.php?urutan="+urutan+"&urut="+urut+"&departemen="+departemen+"&page=<?=$page?>&hal=<?=$hal?>&varbaris="+varbaris;
+    }
+
+    function change_hal() {
+        var departemen = document.getElementById("departemen").value;
+        var hal = document.getElementById("hal").value;
+        var varbaris=document.getElementById("varbaris").value;
+        
+        document.location.href="proses.php?departemen="+departemen+"&page="+hal+"&hal="+hal+"&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris="+varbaris;
+    }
+
+    function change_baris() {
+        var departemen = document.getElementById("departemen").value;
+        var varbaris=document.getElementById("varbaris").value;
+        
+        document.location.href="proses.php?departemen="+departemen+"&urut=<?=$urut?>&urutan=<?=$urutan?>&varbaris="+varbaris;
+    }
     </script>
-    <?	if ($page==0){ 
-		$disback="style='visibility:hidden;'";
-		$disnext="style='visibility:visible;'";
-		}
-		if ($page<$total && $page>0){
-		$disback="style='visibility:visible;'";
-		$disnext="style='visibility:visible;'";
-		}
-		if ($page==$total-1 && $page>0){
-		$disback="style='visibility:visible;'";
-		$disnext="style='visibility:hidden;'";
-		}
-		if ($page==$total-1 && $page==0){
-		$disback="style='visibility:hidden;'";
-		$disnext="style='visibility:hidden;'";
-		}
-	?>
-    </td>
-</tr> 
-<tr>
-    <td>
-    <table border="0"width="95%" align="center"cellpadding="0" cellspacing="0">	
-    <tr>
-       	<td width="30%" align="left">Halaman
-        <select name="hal" id="hal" onChange="change_hal()">
-        <?	for ($m=0; $m<$total; $m++) {?>
-             <option value="<?=$m ?>" <?=IntIsSelected($hal,$m) ?>><?=$m+1 ?></option>
-        <? } ?>
-     	</select>
-	  	dari <?=$total?> halaman
-		
-		<? 
-     // Navigasi halaman berikutnya dan sebelumnya
-        ?>
-        </td>
-    	<!--td align="center">
-    <input <?=$disback?> type="button" class="but" name="back" value=" << " onClick="change_page('<?=(int)$page-1?>')" onMouseOver="showhint('Sebelumnya', this, event, '75px')">
-		<?
-		/*for($a=0;$a<$total;$a++){
-			if ($page==$a){
-				echo "<font face='verdana' color='red'><strong>".($a+1)."</strong></font> "; 
-			} else { 
-				echo "<a href='#' onClick=\"change_page('".$a."')\">".($a+1)."</a> "; 
-			}
-				 
-	    }*/
-		?>
-	     <input <?=$disnext?> type="button" class="but" name="next" value=" >> " onClick="change_page('<?=(int)$page+1?>')" onMouseOver="showhint('Berikutnya', this, event, '75px')">
- 		</td-->
-        <td width="30%" align="right">Jumlah baris per halaman
-      	<select name="varbaris" id="varbaris" onChange="change_baris()">
-        <? 	for ($m=5; $m <= $akhir; $m=$m+5) { ?>
-        	<option value="<?=$m ?>" <?=IntIsSelected($varbaris,$m) ?>><?=$m ?></option>
-        <? 	} ?>
-       
-      	</select></td>
-    </tr>
-    </table>
-	</td></tr>
-<!-- END TABLE CENTER -->    
-</table>
-<?	} else { ?>
-<td width = "65%"></td>
-</tr>
-</table>
-<table width="100%" border="0" align="center">          
-<tr>
-	<td width="19%"></td>
-	<td><hr style="border-style:dotted" color="#000000"/></td>
-</tr>
-</table>
-<table width="100%" border="0" align="center">          
-<tr>
-	<td align="center" valign="middle" height="200">
-   	<? if ($departemen != "") {	?>  
-    	<font size = "2" color ="red"><b>Tidak ditemukan adanya data. 
-        <? //if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <br />Klik &nbsp;<a href="JavaScript:tambah()" ><font size = "2" color ="green">di sini</font></a>&nbsp;untuk mengisi data baru. 
-        <? //} ?>
-        </b></font>
-    <? } else { ?>
-        <font size = "2" color ="red"><b>Belum ada data Departemen.
-        <br />Silahkan isi terlebih dahulu di menu Departemen pada bagian Referensi.
-        </b></font>
-    <? } ?>
-	</td>
-</tr>
-</table>  
-<? } ?> 
-</td></tr>
-<!-- END TABLE BACKGROUND IMAGE -->
-</table>    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-emerald-950 text-slate-800 min-h-screen p-4 md:p-6 overflow-x-hidden" onload="document.getElementById('departemen').focus()">
 
+    <!-- KARTU KONTEN UTAMA (FLOATING CANVAS) -->
+    <div class="w-full min-h-[calc(100vh-3rem)] bg-slate-50 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-emerald-800/30 p-6 md:p-10 flex flex-col">
+        
+        <!-- HEADER & BREADCRUMB -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-green-100 shadow-sm flex-1">
+                <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-lg shadow-emerald-900/30">
+                    <i class="fa-solid fa-users-viewfinder text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Penerimaan Siswa Baru</span>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">PROSES PENERIMAAN</h1>
+                </div>
+            </div>
+            
+            <div class="bg-slate-100 px-5 py-3 rounded-2xl border border-slate-200 self-start md:self-center text-xs flex items-center gap-2">
+                <a href="../siswa_baru.php" target="content" class="text-emerald-700 hover:underline font-semibold">PSB</a>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-600 font-medium">Proses Penerimaan</span>
+            </div>
+        </div>
+
+        <?
+        $sql_tot = "SELECT p.replid FROM prosespenerimaansiswa p WHERE p.departemen='$departemen' "; 
+        $result_tot = QueryDb($sql_tot);
+        $total = ceil(mysqli_num_rows($result_tot)/(int)$varbaris);
+        $jumlah = mysqli_num_rows($result_tot);
+                            
+        $sql = "SELECT p.replid, p.proses, p.keterangan, p.aktif, p.kodeawalan FROM prosespenerimaansiswa p WHERE p.departemen='$departemen' ORDER BY $urut $urutan LIMIT ".(int)$page*(int)$varbaris.",$varbaris"; 
+        $akhir = ceil($jumlah/5)*5;
+        
+        $result = QueryDb($sql);
+        ?>
+        <input type="hidden" name="total" id="total" value="<?=$total?>"/>
+
+        <!-- Control Bar -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <label for="departemen" class="text-sm font-bold text-slate-700">Departemen</label>
+                <div class="relative">
+                    <select name="departemen" id="departemen" onChange="tampil()" class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-sm font-semibold rounded-xl focus:ring-emerald-500 focus:border-emerald-500 block w-56 pl-4 pr-10 py-2.5 shadow-sm transition-colors cursor-pointer">
+                        <? $dep = getDepartemen(SI_USER_ACCESS());    
+                        foreach($dep as $value) {
+                            if ($departemen == "") $departemen = $value; ?>
+                            <option value="<?=$value ?>" <?=StringIsSelected($value, $departemen) ?> ><?=$value ?></option>
+                        <? } ?>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button onClick="refresh()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-arrows-rotate text-emerald-600"></i> Refresh
+                </button>
+                <button onClick="JavaScript:cetak()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-print text-sky-600"></i> Cetak
+                </button>
+                <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                    <button onClick="JavaScript:tambah()" class="flex items-center gap-2 bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-all duration-200 active:scale-95">
+                        <i class="fa-solid fa-plus"></i> Tambah Proses
+                    </button>
+                <? } ?>
+            </div>
+        </div>
+
+        <? if (@mysqli_num_rows($result) > 0){ ?>
+        
+        <!-- Table -->
+        <div class="overflow-hidden border border-slate-100 rounded-3xl shadow-sm bg-white mb-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-slate-700 uppercase text-xs font-bold tracking-wider">
+                        <th class="py-4 px-6 text-center w-16">No</th>
+                        <th class="py-4 px-6 cursor-pointer hover:bg-slate-100" onClick="change_urut('p.proses','<?=$urutan?>')">Proses <i class="fa-solid fa-sort ml-1 opacity-40"></i></th>
+                        <th class="py-4 px-6 cursor-pointer hover:bg-slate-100" onClick="change_urut('p.kodeawalan','<?=$urutan?>')">Kode Awalan <i class="fa-solid fa-sort ml-1 opacity-40"></i></th>
+                        <th class="py-4 px-6 text-center">Jumlah</th>
+                        <th class="py-4 px-6">Keterangan</th>
+                        <th class="py-4 px-6 text-center w-32" onClick="change_urut('p.aktif','<?=$urutan?>')">Status <i class="fa-solid fa-sort ml-1 opacity-40"></i></th>
+                        <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                            <th class="py-4 px-6 text-center w-36">Aksi</th>
+                        <? } ?>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-800">
+                    <?    
+                    $cnt = ($page == 0) ? 0 : (int)$page*(int)$varbaris;
+                    while ($row = @mysqli_fetch_array($result)) {
+                        $sql1 = "SELECT COUNT(c.replid) AS jumlah FROM calonsiswa c WHERE c.idproses = '$row[replid]' AND c.aktif = 1"; 
+                        $result1 = QueryDb($sql1);    
+                        $row1 = mysqli_fetch_array($result1);
+                    ?>
+                    <tr class="hover:bg-slate-50/50 transition-colors duration-150">
+                        <td class="py-3 px-6 text-center text-slate-400 font-semibold"><?=++$cnt ?></td>
+                        <td class="py-3 px-6 text-emerald-850 font-bold"><?=$row['proses']?></td>
+                        <td class="py-3 px-6 text-slate-600"><?=$row['kodeawalan']?></td>
+                        <td class="py-3 px-6 text-center text-slate-700 font-bold"><?=$row1['jumlah']?></td>
+                        <td class="py-3 px-6 text-slate-500"><?=$row['keterangan']?></td>
+                        <td class="py-3 px-6 text-center">
+                            <a href="JavaScript:setaktif(<?=$row['replid'] ?>, <?=$row['aktif'] ?>)" class="inline-block transition-transform active:scale-95">
+                                <span class="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full text-xs font-semibold <?=$row['aktif']==1?'bg-emerald-100 text-emerald-800':'bg-slate-100 text-slate-600'?> shadow-sm border border-emerald-200/50 transition-colors">
+                                    <span class="w-1.5 h-1.5 rounded-full <?=$row['aktif']==1?'bg-emerald-600':'bg-slate-400'?>"></span> <?=$row['aktif']==1?'Aktif':'Nonaktif'?>
+                                </span>
+                            </a>
+                        </td>
+                        <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                        <td class="py-3 px-6 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onClick="JavaScript:edit(<?=$row['replid'] ?>)" class="p-2 text-sky-600 hover:bg-sky-50 rounded-xl transition-colors" title="Ubah Proses">
+                                    <i class="fa-solid fa-pen-to-square text-base"></i>
+                                </button>
+                                <button onClick="JavaScript:hapus(<?=$row['replid'] ?>)" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Hapus Proses">
+                                    <i class="fa-solid fa-trash-can text-base"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <? } ?>
+                    </tr>
+                    <? } CloseDb(); ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5 text-sm text-slate-600 font-semibold">
+                <span>Halaman</span>
+                <select name="hal" id="hal" onChange="change_hal()" class="bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-xl px-2 py-1.5 focus:ring-emerald-500 shadow-sm cursor-pointer">
+                    <?    for ($m=0; $m<$total; $m++) {?>
+                         <option value="<?=$m ?>" <?=IntIsSelected($hal,$m) ?>><?=$m+1 ?></option>
+                    <? } ?>
+                </select>
+                <span>dari <strong class="text-slate-900"><?=$total?></strong> halaman</span>
+            </div>
+            <div class="flex items-center gap-2.5 text-sm text-slate-600 font-semibold">
+                <span>Baris per halaman</span>
+                <select name="varbaris" id="varbaris" onChange="change_baris()" class="bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-xl px-2 py-1.5 focus:ring-emerald-500 shadow-sm cursor-pointer">
+                    <?     for ($m=5; $m <= $akhir; $m=$m+5) { ?>
+                        <option value="<?=$m ?>" <?=IntIsSelected($varbaris,$m) ?>><?=$m ?></option>
+                    <?     } ?>
+                </select>
+            </div>
+        </div>
+
+        <? } else { ?>
+            <!-- Fallback No Data State -->
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-md p-12 text-center max-w-xl mx-auto mt-12">
+                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 shadow-inner">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-2">Tidak ditemukan adanya data</h3>
+                <p class="text-xs text-slate-500 mb-6">Silakan periksa filter departemen Anda atau buat data proses baru.</p>
+                <button onClick="JavaScript:tambah()" class="inline-flex items-center gap-2 bg-emerald-950 hover:bg-emerald-900 text-white font-bold text-xs py-3 px-6 rounded-2xl shadow-md transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Tambah Data Baru
+                </button>
+            </div>
+        <? } ?>
+    </div>
 </body>
 </html>
-<script language="javascript">
-var spryselect = new Spry.Widget.ValidationSelect("departemen");
-</script>
