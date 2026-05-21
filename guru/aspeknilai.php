@@ -1,10 +1,7 @@
 <?
- ?>
-<?
 require_once('../include/errorhandler.php');
 require_once('../include/sessioninfo.php');
 require_once('../include/db_functions.php');
-require_once('../include/sessioninfo.php');
 require_once('../include/common.php');
 require_once('../include/config.php');
 require_once('../cek.php');
@@ -29,151 +26,171 @@ else if ($op == "shf78e78fhgewifhdwsjfsdgwe")
     QueryDb($sql);
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<link rel="stylesheet" type="text/css" href="../style/style.css">
-<meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
-<link rel="stylesheet" type="text/css" href="../style/tooltips.css">
-<script language="javascript" src="../script/tooltips.js"></script>
-<script language="javascript" src="../script/tables.js"></script>
-<script language="javascript" src="../script/tools.js"></script>
-<script language="javascript">
-function tambah() {
-	newWindow('aspeknilai_add.php', 'TambahAspekNilai','530','350','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function refresh() {
-	document.location.href = "aspeknilai.php";
-}
-
-function edit(replid) {
-	newWindow('aspeknilai_edit.php?replid='+replid, 'UbahAspekNilai','530','350','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function hapus(replid) {
-	if (confirm("Apakah anda yakin akan menghapus aspek penilaian ini?"))
-		document.location.href = "aspeknilai.php?op=xm8r389xemx23xb2378e23&replid="+replid;
-}
-
-function cetak() {
-	newWindow('aspeknilai_cetak.php', 'CetakAspekNilai','790','650','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function setAktif(replid, newAktif, title)
-{
-    if (!confirm(title + "?"))
-        return;
-
-    document.location.href = "aspeknilai.php?op=shf78e78fhgewifhdwsjfsdgwe&replid="+replid+"&newaktif=" + newAktif;
-}
-</script>
-</head>
-
-<body>
-
-<table border="0" width="100%" height="100%">
-<!-- TABLE BACKGROUND IMAGE -->
-<tr><td align="center" valign="top" background="../images/ico/b_jenisujian.png" style="margin:0;padding:0;background-repeat:no-repeat;">
-
-<table border="0" width="100%" align="center">
-<!-- TABLE CENTER -->
-<tr height="300">
-  <td align="left" valign="top">
-
-	<table border="0"width="95%" align="center">
-    <tr>
-        <td align="right"><font size="4" face="Verdana, Arial, Helvetica, sans-serif" style="background-color:#ffcc66">&nbsp;</font>&nbsp;<font size="4" face="Verdana, Arial, Helvetica, sans-serif" color="Gray">Aspek Penilaian</font></td>
-    </tr>
-    <tr>
-        <td align="right"><a href="../guru.php?page=p" target="content">
-          <font size="1" face="Verdana" color="#000000"><b>Guru & Pelajaran</b></font></a>&nbsp>&nbsp <font size="1" face="Verdana" color="#000000"><b>Aspek Penilaian</b></font>
-        </td>
-    </tr>
-     <tr>
-      <td align="left">&nbsp;</td>
-      </tr>
-	</table>
-	<br /><br />
-    <?
-	$sql = "SELECT replid, dasarpenilaian, keterangan, aktif 
-			  FROM dasarpenilaian";
-	$result = QueryDb($sql);
-	if (@mysqli_num_rows($result) > 0)
-	{
-	?>
-    <table border="0" cellpadding="0" cellspacing="0" width="95%" align="center">
-    <!-- TABLE CONTENT -->
-    <tr><td align="right">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aspek Penilaian</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Colorful Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <a href="#" onClick="refresh()"><img src="../images/ico/refresh.png" border="0" onMouseOver="showhint('Refresh!', this, event, '50px')"/>&nbsp;Refresh</a>&nbsp;&nbsp;
-    <a href="JavaScript:cetak()"><img src="../images/ico/print.png" border="0" onMouseOver="showhint('Cetak!', this, event, '50px')" />&nbsp;Cetak</a>&nbsp;&nbsp;    
-<?	if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-	    <a href="JavaScript:tambah()"><img src="../images/ico/tambah.png" border="0" onMouseOver="showhint('Tambah!', this, event, '50px')" />&nbsp;Tambah Aspek Penilaian</a>
-<?	} ?>    
-    </td></tr>
-    </table><br />
-    <table class="tab" id="table" border="1" style="border-collapse:collapse" width="95%" align="center" bordercolor="#000000">
-    <tr height="30">
-    	<td width="4%" class="header" align="center">No</td>
-        <td width="15%" class="header" align="center">Kode</td>
-        <td width="*" class="header" align="center">Aspek Penilaian</td>
-        <?	if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <td width="8%" class="header">&nbsp;</td>
-        <?	} ?>
-    </tr>
-<? 	
-	$cnt = 0;
-	while ($row = mysqli_fetch_row($result)) {
-	    $isAktif = $row[3];
-	    $imAktif = $isAktif ? "../images/ico/aktif.png" : "../images/ico/nonaktif.png";
-        $tiAktif = $isAktif ? "Ubah menjadi non aktif" : "Ubah menjadi aktif";
-	    $newAktif = $isAktif ? 0 : 1;
-	    ?>
-    <tr height="25">
-    	<td align="center"><?=++$cnt ?></td>
-        <td align="center"><?=$row[1] ?></td>
-        <td><?=$row[2] ?></td>
-<?		if (SI_USER_LEVEL() != $SI_USER_STAFF) {  ?>         
-		<td align="center">
-            <a href="JavaScript:edit(<?=$row[0] ?>)"><img src="../images/ico/ubah.png" border="0" /></a>&nbsp;
-            <a href="JavaScript:setAktif(<?=$row[0] ?>, <?= $newAktif?>, '<?= $tiAktif?>')" title="<?= $tiAktif?>"><img src="<?= $imAktif ?>" border="0" /></a>&nbsp;
-            <a href="JavaScript:hapus(<?=$row[0] ?>)"><img src="../images/ico/hapus.png" border="0" /></a>
-        </td>
-<?		} ?>  
-    </tr>
-<?	} ?>
-    <!-- END TABLE CONTENT -->
-    </table>
-    <script language='JavaScript'>
-	    Tables('table', 1, 0);
+    <script language="javascript" src="../script/tooltips.js"></script>
+    <script language="javascript" src="../script/tables.js"></script>
+    <script language="javascript" src="../script/tools.js"></script>
+    <script language="javascript">
+    function tambah() {
+        newWindow('aspeknilai_add.php', 'TambahAspekNilai','530','350','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+
+    function refresh() {
+        document.location.href = "aspeknilai.php";
+    }
+
+    function edit(replid) {
+        newWindow('aspeknilai_edit.php?replid='+replid, 'UbahAspekNilai','530','350','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+
+    function hapus(replid) {
+        if (confirm("Apakah anda yakin akan menghapus aspek penilaian ini?"))
+            document.location.href = "aspeknilai.php?op=xm8r389xemx23xb2378e23&replid="+replid;
+    }
+
+    function cetak() {
+        newWindow('aspeknilai_cetak.php', 'CetakAspekNilai','790','650','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+
+    function setAktif(replid, newAktif, title)
+    {
+        if (!confirm(title + "?"))
+            return;
+
+        document.location.href = "aspeknilai.php?op=shf78e78fhgewifhdwsjfsdgwe&replid="+replid+"&newaktif=" + newAktif;
+    }
     </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-green-950 text-slate-800 min-h-screen p-4 md:p-6 select-none overflow-x-hidden">
+    <!-- KARTU KONTEN UTAMA (FLOATING CANVAS) -->
+    <div class="w-full min-h-[calc(100vh-3rem)] bg-slate-50 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-green-800/30 p-6 md:p-10">
+        
+        <!-- Header & Breadcrumb -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-green-100 shadow-sm flex-1">
+                <!-- Background icon emerald-900 -->
+                <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-lg shadow-emerald-900/30">
+                    <i class="fa-solid fa-list-check text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Guru & Pelajaran</span>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">ASPEK PENILAIAN</h1>
+                </div>
+            </div>
+            
+            <div class="bg-slate-100 px-5 py-3 rounded-2xl border border-slate-200 self-start md:self-center text-xs flex items-center gap-2">
+                <a href="../guru.php?page=p" target="content" class="text-emerald-700 hover:underline font-semibold">Guru & Pelajaran</a>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-600 font-medium">Aspek Penilaian</span>
+            </div>
+        </div>
 
-	</td></tr>
-<!-- END TABLE CENTER -->    
-</table>
-<?	} else { ?>
+        <!-- Action Row -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm mb-6 flex flex-wrap items-center justify-end gap-2.5">
+            <button onClick="refresh()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all duration-200 active:scale-95">
+                <i class="fa-solid fa-arrows-rotate text-emerald-600"></i> Refresh
+            </button>
+            <button onClick="JavaScript:cetak()" class="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all duration-200 active:scale-95">
+                <i class="fa-solid fa-print text-sky-600"></i> Cetak
+            </button>
+            <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                <button onClick="JavaScript:tambah()" class="flex items-center gap-2 bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Tambah Aspek Penilaian
+                </button>
+            <? } ?>
+        </div>
 
-<table width="100%" border="0" align="center">
-
-<tr>
-	<td align="center" valign="middle" height="250" colspan="2">
-    	<font size = "2" color ="red"><b>Tidak ditemukan adanya data.
-       <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <br />Klik &nbsp;<a href="JavaScript:tambah()" ><font size = "2" color ="green">di sini</font></a>&nbsp;untuk mengisi data baru.
+        <?
+        $sql = "SELECT replid, dasarpenilaian, keterangan, aktif 
+                  FROM dasarpenilaian";
+        $result = QueryDb($sql);
+        if (@mysqli_num_rows($result) > 0) {
+        ?>
+        <!-- Premium Modern Table -->
+        <div class="overflow-hidden border border-slate-100 rounded-3xl shadow-sm bg-white">
+            <table class="w-full text-left border-collapse" id="table">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-slate-700 uppercase text-xs font-bold tracking-wider select-none">
+                        <th class="py-4 px-6 text-center w-16">No</th>       
+                        <th class="py-4 px-6 w-32 text-center">Kode</th>
+                        <th class="py-4 px-6">Aspek Penilaian</th>
+                        <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                            <th class="py-4 px-6 text-center w-40">Aksi</th>
+                        <? } ?>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-800">
+                    <? 	
+                    $cnt = 0;
+                    while ($row = mysqli_fetch_row($result)) {
+                        $isAktif = $row[3];
+                        $tiAktif = $isAktif ? "Ubah menjadi non aktif" : "Ubah menjadi aktif";
+                        $newAktif = $isAktif ? 0 : 1;
+                    ?>
+                    <tr class="hover:bg-slate-50/50 transition-colors duration-150">
+                        <td class="py-3.5 px-6 text-center text-slate-400 font-semibold"><?=++$cnt?></td>
+                        <td class="py-3.5 px-6 text-center text-emerald-800 font-bold"><?=$row[1]?></td>
+                        <td class="py-3.5 px-6 text-slate-900"><?=$row[2]?></td>
+                        <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                        <td class="py-3.5 px-6 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onClick="JavaScript:edit(<?=$row[0] ?>)" class="p-2 text-sky-600 hover:bg-sky-50 rounded-xl transition-colors" title="Ubah">
+                                    <i class="fa-solid fa-pen-to-square text-base"></i>
+                                </button>
+                                <button onClick="JavaScript:setAktif(<?=$row[0] ?>, <?= $newAktif?>, '<?= $tiAktif?>')" class="p-2 transition-transform active:scale-90" title="<?= $tiAktif?>">
+                                    <? if ($isAktif) { ?>
+                                        <i class="fa-solid fa-toggle-on text-2xl text-emerald-500"></i>
+                                    <? } else { ?>
+                                        <i class="fa-solid fa-toggle-off text-2xl text-slate-300"></i>
+                                    <? } ?>
+                                </button>
+                                <button onClick="JavaScript:hapus(<?=$row[0] ?>)" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Hapus">
+                                    <i class="fa-solid fa-trash-can text-base"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <? } ?>
+                    </tr>
+                    <? } ?>
+                </tbody>
+            </table>
+        </div>
+        <script language='JavaScript'>
+            Tables('table', 1, 0);
+        </script>
+        <? } else { ?>
+        <!-- Fallback No Data State -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-md p-12 text-center max-w-xl mx-auto mt-12">
+            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-6 shadow-inner">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Tidak ditemukan adanya data</h3>
+            <p class="text-xs text-slate-500 mb-6">Silakan buat aspek penilaian baru untuk memulai pendataan.</p>
+            <? if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
+                <button onClick="JavaScript:tambah()" class="inline-flex items-center gap-2 bg-emerald-950 hover:bg-emerald-900 text-white font-bold text-xs py-3 px-6 rounded-2xl shadow-md transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Tambah Aspek Penilaian
+                </button>
+            <? } ?>
+        </div>
         <? } ?>
-        </p></b></font>
-	</td>
-</tr>
-</table>  
-<? } ?> 
-</td></tr>
-<!-- END TABLE BACKGROUND IMAGE -->
-</table>    
-
+    </div>
 </body>
 </html>
-<? CloseDb();?>
-
+<? CloseDb(); ?>

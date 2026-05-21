@@ -1,6 +1,4 @@
 <?
- ?>
-<?
 require_once('../include/errorhandler.php');
 require_once('../include/sessioninfo.php');
 require_once('../include/common.php');
@@ -27,268 +25,259 @@ if (isset($_REQUEST['kelas']))
 
 $ERROR_MSG = "";
 
-OpenDb();	
+OpenDb();
+
+// Get default values if not set
+if ($departemen == "") {
+    $dep = getDepartemen(SI_USER_ACCESS());
+    $departemen = $dep[0];
+}
+
+if ($tahunajaran == "") {
+    $sql = "SELECT replid FROM tahunajaran where departemen='$departemen' AND aktif = 1";
+    $result = QueryDb($sql);
+    $row = mysqli_fetch_array($result);
+    $tahunajaran = $row['replid'];
+}
+
+if ($semester == "") {
+    $sql = "SELECT replid FROM semester where departemen='$departemen' AND aktif = 1";
+    $result = QueryDb($sql);
+    $row = @mysqli_fetch_array($result);
+    $semester = $row['replid'];
+}
+
+if ($tingkat == "") {
+    $sql = "SELECT replid FROM tingkat WHERE aktif=1 AND departemen='$departemen' ORDER BY urutan LIMIT 1";	
+    $result = QueryDb($sql);
+    $row = mysqli_fetch_array($result);
+    $tingkat = $row['replid'];
+}
+
+if ($kelas == "" && $tahunajaran != "" && $tingkat != "") {
+    $sql = "SELECT replid FROM kelas WHERE aktif=1 AND idtahunajaran = '$tahunajaran' AND idtingkat = '$tingkat' ORDER BY kelas LIMIT 1";	
+    $result = QueryDb($sql);
+    $row = mysqli_fetch_array($result);
+    $kelas = $row['replid'];
+}
 ?>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<link rel="stylesheet" type="text/css" href="../style/style.css">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Cetak Form Presensi Pelajaran</title>
-<script src="../script/SpryValidationSelect.js" type="text/javascript"></script>
-<link href="../script/SpryValidationSelect.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" type="text/css" href="../style/tooltips.css">
-<script language="JavaScript" src="../script/tooltips.js"></script>
-<script language="javascript" src="../script/tables.js"></script>
-<script language="javascript" src="../script/tools.js"></script>
-<script language="javascript" src="../script/validasi.js"></script>
-<script language="javascript">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Form Presensi Harian</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Colorful Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 
-function refresh() {	
-	document.location.reload();
-}
-
-function change() {
-	var departemen = document.getElementById("departemen").value;
-	var tahunajaran = document.getElementById("tahunajaran").value;
-	var semester = document.getElementById("semester").value;
-	var tingkat = document.getElementById("tingkat").value;
-	var kelas = document.getElementById("kelas").value;
-			
-	document.location.href = "formpresensi_harian.php?departemen="+departemen+"&tahunajaran="+tahunajaran+"&semester="+semester+"&tingkat="+tingkat+"&kelas="+kelas;
-}
-
-function change_dep() {
-	var departemen = document.getElementById("departemen").value;
-	var semester = document.getElementById("semester").value;
-			
-	document.location.href = "formpresensi_harian.php?departemen="+departemen+"&semester="+semester;
-}
-
-function change_tingkat() {
-	var departemen = document.getElementById("departemen").value;
-	var tahunajaran = document.getElementById("tahunajaran").value;
-	var semester = document.getElementById("semester").value;
-	var tingkat = document.getElementById("tingkat").value;
-		
-	document.location.href = "formpresensi_harian.php?departemen="+departemen+"&tahunajaran="+tahunajaran+"&semester="+semester+"&tingkat="+tingkat;
-}
-
-function change_ajaran() {
-	var departemen = document.getElementById("departemen").value;
-	var tahunajaran = document.getElementById("tahunajaran").value;
-	var semester = document.getElementById("semester").value;
-	
-	document.location.href = "formpresensi_harian.php?departemen="+departemen+"&tahunajaran="+tahunajaran+"&semester="+semester;
-}
-
-function validate() {
-	return validateEmptyText('tahunajaran', 'Tahun Ajaran') && 
-		   validateEmptyText('semester', 'Semester') && 	
-		   validateEmptyText('kelas', 'Kelas');
-}
-
-function focusNext(elemName, evt) {
-    evt = (evt) ? evt : event;
-    var charCode = (evt.charCode) ? evt.charCode :
-        ((evt.which) ? evt.which : evt.keyCode);
-    if (charCode == 13) {
-		document.getElementById(elemName).focus();
-		if (elemName == 'cetak') {
-			return validate();
-			document.location.href = "formpresensi_harian.php?departemen=<?=$departemen?>&tahunajaran=<?=$tahunajaran?>&semester=<?=$semester?>&tingkat=<?=$tingkat?>&kelas=<?=$kelas?>";
-       }
-	   return false;
+    <script language="javascript" src="../script/tools.js"></script>
+    <script language="javascript">
+    function change_dep() {
+        var departemen = document.getElementById("departemen").value;
+        document.location.href = "formpresensi_harian.php?departemen="+departemen;
     }
-    return true;
-}
-function cetaklah()
-{
-	var departemen = document.getElementById("departemen").value;
-	var tahunajaran = document.getElementById("tahunajaran").value;
-	var semester = document.getElementById("semester").value;
-	var kelas = document.getElementById("kelas").value;
-	newWindow('formpresensi_harian_cetak.php?departemen='+departemen+'&tahunajaran='+tahunajaran+'&semester='+semester+'&kelas='+kelas,'CetakFormPresensiHarian','790','850','resizable=1,scrollbars=1,status=0,toolbar=0');
-}
-</script>
-<style type="text/css">
-<!--
-.style1 {
-	color: #FF0000;
-	font-weight: bold;
-}
--->
-</style>
-</head>
 
-<body onLoad="document.getElementById('departemen').focus()">
+    function change_tingkat() {
+        var departemen = document.getElementById("departemen").value;
+        var tahunajaran = document.getElementById("tahunajaran").value;
+        var semester = document.getElementById("semester").value;
+        var tingkat = document.getElementById("tingkat").value;
+        document.location.href = "formpresensi_harian.php?departemen="+departemen+"&tahunajaran="+tahunajaran+"&semester="+semester+"&tingkat="+tingkat;
+    }
 
-<table border="0" width="100%" height="100%">
-<!-- TABLE BACKGROUND IMAGE -->
-<tr><td align="center" valign="top" background="../images/ico/b_cetak.png" style="margin:0;padding:0;background-repeat:no-repeat;">
+    function change_kelas() {
+        var departemen = document.getElementById("departemen").value;
+        var tahunajaran = document.getElementById("tahunajaran").value;
+        var semester = document.getElementById("semester").value;
+        var tingkat = document.getElementById("tingkat").value;
+        var kelas = document.getElementById("kelas").value;
+        document.location.href = "formpresensi_harian.php?departemen="+departemen+"&tahunajaran="+tahunajaran+"&semester="+semester+"&tingkat="+tingkat+"&kelas="+kelas;
+    }
 
-<table border="0" width="100%" align="center">
-<!-- TABLE CENTER -->
-<tr height="300">
-	<!--<td width="180" height="122">&nbsp;</td>-->
-	<td align="left" valign="top">
-	<table border="0"width="95%" align="center">
-    <!-- TABLE TITLE -->
-    <tr>
-        <td align="right">
-        <font size="4" face="Verdana, Arial, Helvetica, sans-serif" style="background-color:#ffcc66">&nbsp;</font>&nbsp;<font size="4" face="Verdana, Arial, Helvetica, sans-serif" color="Gray">Cetak Form Presensi Harian</font><br />
-        </td>
-   	</tr>
-    <tr>
-      	<td align="right"><a href="../presensi.php?page=ph" target="content">
-      	<font size="1" color="#000000"><b>Presensi</b></font></a>&nbsp>&nbsp
-        <font size="1" color="#000000"><b>Cetak Form Presensi Harian</b></font>
-        </td>
-    </tr>
-    <tr>
-    	<td align="left">&nbsp;</td>
-    </tr>
-	</table>
-    <table align="center">
-    <tr>
-    	<td>
-        <form name="main" onSubmit="return validate()">
-        <br />
-        <fieldset>
-        <legend><strong>Data Form Presensi Harian</strong></legend>
-        <table border="0" cellpadding="2" cellspacing="5" width="100%" align="center" >
-        <!-- TABLE LINK -->
-        <tr>
-            <td align="left" width="50%"><strong>Departemen</strong></td>
-            <td width="*"> 
-            <select name="departemen" id="departemen" onChange="change_dep()" style="width:150px;" onKeyPress="return focusNext('tingkat', event)">
-        <?	$dep = getDepartemen(SI_USER_ACCESS());    
-            foreach($dep as $value) {
-                if ($departemen == "")
-                    $departemen = $value; ?>
-            <option value="<?=$value ?>" <?=StringIsSelected($value, $departemen) ?> > <?=$value ?> </option>
-        <?	} ?>
-            </select>    </td>          
-        </tr>
+    function cetaklah() {
+        var departemen = document.getElementById("departemen").value;
+        var tahunajaran = document.getElementById("tahunajaran").value;
+        var semester = document.getElementById("semester").value;
+        var kelas = document.getElementById("kelas").value;
         
-        <tr>
-            <td align="left"><strong>Tahun Ajaran</strong></td>
-            <td>
-                <?
-                OpenDb();
-                $sql = "SELECT replid,tahunajaran FROM tahunajaran where departemen='$departemen' AND aktif = 1";
-                $result = QueryDb($sql);
-				CloseDb();
-				$row = mysqli_fetch_array($result);
-				$tahun = $row['tahunajaran'];
-				$tahunajaran = $row['replid'];
-				?>
-                
-                <input type="text" name="tahun" size="22" value="<?=$tahun ?>" readonly class="disabled"/>
-                <input type="hidden" name="tahunajaran" id="tahunajaran" value="<?=$tahunajaran?>">
+        if (kelas == "") {
+            alert('Kelas tidak boleh kosong');
+            return false;
+        }
+        newWindow('formpresensi_harian_cetak.php?departemen='+departemen+'&tahunajaran='+tahunajaran+'&semester='+semester+'&kelas='+kelas,'CetakFormPresensiHarian','790','850','resizable=1,scrollbars=1,status=0,toolbar=0');
+    }
 
-            </td> 
-            
-        </tr>
-        <tr>
-            <td align="left"><strong>Semester</strong></td>
-            <td>            
-                <?
-                OpenDb();
-                $sql = "SELECT replid,semester FROM semester where departemen='$departemen' AND aktif = 1";
-                $result = QueryDb($sql);
-                CloseDb();
-               	$row = @mysqli_fetch_array($result);
-                
-                ?>
-                <input type="text" name="sem" size="22" value="<?=$row['semester'] ?>" readonly class="disabled"/>
-                <input type="hidden" name="semester" id="semester" value="<?=$row['replid']?>">
-          	</td> 
-        </tr>
-        <tr>
-        	<td><strong>Tingkat</strong></td>
-            <td>
-                <select name="tingkat" id="tingkat" onChange="change_tingkat()" style="width:150px;" onKeyPress="return focusNext('kelas', event)">
-                <?	OpenDb();
-                $sql = "SELECT replid,tingkat FROM tingkat WHERE aktif=1 AND departemen='$departemen' ORDER BY urutan";	
-                $result = QueryDb($sql);
-                CloseDb();
-        
-                while($row = mysqli_fetch_array($result)) {
-                if ($tingkat == "")
-                    $tingkat = $row['replid'];				
-                ?>
-                <option value="<?=urlencode($row['replid'])?>" <?=IntIsSelected($row['replid'], $tingkat) ?>><?=$row['tingkat']?></option>
-                <?
-                } //while
-                ?>
-                </select>    
-            </td>
-        </tr>
-        <tr>
-         	<td><strong>Kelas</strong></td>
-            <td>
-                <select name="kelas" id="kelas" onChange="change()" style="width:150px;" onKeyPress="return focusNext('cetak', event)">
-                <?	OpenDb();
-                $sql = "SELECT replid,kelas FROM kelas WHERE aktif=1 AND idtahunajaran = '$tahunajaran' AND idtingkat = '$tingkat' ORDER BY kelas";	
-                $result = QueryDb($sql);
-                CloseDb();
-        
-                while($row = mysqli_fetch_array($result)) {
-                if ($kelas == "")
-                    $kelas = $row['replid'];
-                $kls = $row['kelas'];			 
-                ?>
-                <option value="<?=urlencode($row['replid'])?>" <?=IntIsSelected($row['replid'], $kelas) ?>><?=$row['kelas']?></option>
-                 
-                <?
-                } //while
-                ?>
-                </select>
-            </td>
-        </tr>   
-        <tr>
-            <td colspan="2">
-            <?
-            OpenDb();
-            $sql = "SELECT nis, nama FROM siswa WHERE idkelas = '$kelas' ORDER BY nama";
-            $result = QueryDb($sql);
-            
-            if (mysqli_num_rows($result) > 0) {
-                if ($result) { ?>
-                   <div align="center"><br /><input type="button" name="Cetak" id="cetak" value="Cetak" onclick="cetaklah()" class="but" style="width:80px;" /></div>
-        <?		}
+    function focusNext(elemName, evt) {
+        evt = (evt) ? evt : event;
+        var charCode = (evt.charCode) ? evt.charCode :
+            ((evt.which) ? evt.which : evt.keyCode);
+        if (charCode == 13) {
+            if (elemName == 'cetak') {
+                cetaklah();
             } else {
-                CloseDb();
-			?>
-                <span class="style1">Belum ada data siswa yang terdaftar pada kelas ini!</span>                <?
+                document.getElementById(elemName).focus();
             }
-            ?>            </td>
-        </tr>
-        </table>
-    	</fieldset>
-    	</form>
-   		</td>
-    </tr>
-    </table>
-    </td>
-</tr>   
-<!-- END TABLE CENTER -->    
-</table>
+            return false;
+        }
+        return true;
+    }
+    </script>
+</head>
+<body class="bg-green-950 text-slate-800 min-h-screen p-4 md:p-6 select-none overflow-x-hidden" onload="document.getElementById('departemen').focus()">
+    <!-- KARTU KONTEN UTAMA (FLOATING CANVAS) -->
+    <div class="w-full h-[calc(100vh-3rem)] bg-slate-50 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-green-800/30 p-6 md:p-10 flex flex-col">
+        
+        <!-- Header & Breadcrumb -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-green-100 shadow-sm flex-1">
+                <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-lg shadow-emerald-900/30">
+                    <i class="fa-solid fa-print text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Presensi</span>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">CETAK FORM PRESENSI HARIAN</h1>
+                </div>
+            </div>
+            
+            <div class="bg-slate-100 px-5 py-3 rounded-2xl border border-slate-200 self-start md:self-center text-xs flex items-center gap-2">
+                <a href="../presensi.php?page=ph" target="content" class="text-emerald-700 hover:underline font-semibold">Presensi</a>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-600 font-medium">Cetak Form Presensi Harian</span>
+            </div>
+        </div>
 
-</td></tr>
-<!-- END TABLE BACKGROUND IMAGE -->
-</table>    
-<? if (strlen($ERROR_MSG) > 0) { ?>
-<script language="javascript">
-	//alert('<?=$ERROR_MSG?>');
-</script>
-<? } ?>
+        <!-- Filter Controls Row -->
+        <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Departemen -->
+                <div class="flex flex-col gap-2">
+                    <label for="departemen" class="text-sm font-bold text-slate-700 uppercase tracking-wider text-[10px] ml-1">Departemen</label>
+                    <div class="relative">
+                        <select name="departemen" id="departemen" onChange="change_dep()" class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-4 pr-10 py-3 shadow-sm transition-colors cursor-pointer">
+                            <? $dep = getDepartemen(SI_USER_ACCESS());    
+                            foreach($dep as $value) { ?>
+                                <option value="<?=$value ?>" <?=StringIsSelected($value, $departemen) ?> ><?=$value ?></option>
+                            <? } ?>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tahun Ajaran -->
+                <div class="flex flex-col gap-2">
+                    <label for="tahun" class="text-sm font-bold text-slate-700 uppercase tracking-wider text-[10px] ml-1">Tahun Ajaran</label>
+                    <? 
+                    $sql = "SELECT replid,tahunajaran FROM tahunajaran where departemen='$departemen' AND aktif = 1";
+                    $result = QueryDb($sql);
+                    $row = mysqli_fetch_array($result);
+                    ?>
+                    <input type="text" name="tahun" id="tahun" readonly class="bg-slate-100 border border-slate-200 text-slate-500 text-xs font-bold rounded-2xl px-4 py-3 w-full shadow-sm" value="<?=$row['tahunajaran']?>" />
+                    <input type="hidden" name="tahunajaran" id="tahunajaran" value="<?=$row['replid']?>">
+                </div>
+
+                <!-- Semester -->
+                <div class="flex flex-col gap-2">
+                    <label for="sem" class="text-sm font-bold text-slate-700 uppercase tracking-wider text-[10px] ml-1">Semester</label>
+                    <? 
+                    $sql = "SELECT replid,semester FROM semester where departemen='$departemen' AND aktif = 1";
+                    $result = QueryDb($sql);
+                    $row = @mysqli_fetch_array($result);
+                    ?>
+                    <input type="text" name="sem" id="sem" readonly class="bg-slate-100 border border-slate-200 text-slate-500 text-xs font-bold rounded-2xl px-4 py-3 w-full shadow-sm" value="<?=$row['semester']?>" />
+                    <input type="hidden" name="semester" id="semester" value="<?=$row['replid']?>">
+                </div>
+
+                <!-- Tingkat -->
+                <div class="flex flex-col gap-2">
+                    <label for="tingkat" class="text-sm font-bold text-slate-700 uppercase tracking-wider text-[10px] ml-1">Tingkat</label>
+                    <div class="relative">
+                        <select name="tingkat" id="tingkat" onChange="change_tingkat()" class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-4 pr-10 py-3 shadow-sm transition-colors cursor-pointer">
+                            <? 
+                            $sql = "SELECT replid,tingkat FROM tingkat WHERE aktif=1 AND departemen='$departemen' ORDER BY urutan";	
+                            $result = QueryDb($sql);
+                            while($row = mysqli_fetch_array($result)) { ?>
+                                <option value="<?=urlencode($row['replid'])?>" <?=IntIsSelected($row['replid'], $tingkat) ?>><?=$row['tingkat']?></option>
+                            <? } ?>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kelas -->
+                <div class="flex flex-col gap-2">
+                    <label for="kelas" class="text-sm font-bold text-slate-700 uppercase tracking-wider text-[10px] ml-1">Kelas</label>
+                    <div class="relative">
+                        <select name="kelas" id="kelas" onChange="change_kelas()" class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-4 pr-10 py-3 shadow-sm transition-colors cursor-pointer">
+                            <? 
+                            $sql = "SELECT replid,kelas FROM kelas WHERE aktif=1 AND idtahunajaran = '$tahunajaran' AND idtingkat = '$tingkat' ORDER BY kelas";	
+                            $result = QueryDb($sql);
+                            while($row = mysqli_fetch_array($result)) { ?>
+                                <option value="<?=urlencode($row['replid'])?>" <?=IntIsSelected($row['replid'], $kelas) ?>><?=$row['kelas']?></option>
+                            <? } ?>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button Container -->
+                <div class="flex items-end">
+                    <?
+                    $sql = "SELECT nis FROM siswa WHERE idkelas = '$kelas' ORDER BY nama";
+                    $result = QueryDb($sql);
+                    if (mysqli_num_rows($result) > 0) { ?>
+                        <button id="cetak" onClick="cetaklah()" class="w-full flex items-center justify-center gap-2 bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all duration-200 active:scale-95">
+                            <i class="fa-solid fa-print"></i> CETAK FORM
+                        </button>
+                    <? } else { ?>
+                        <div class="w-full p-3 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-[10px] font-bold text-center uppercase tracking-wider">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i> Belum ada data siswa
+                        </div>
+                    <? } ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend / Info Area -->
+        <div class="flex-1 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center justify-center p-10 text-center">
+            <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 text-emerald-900">
+                <i class="fa-solid fa-info-circle text-4xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 mb-2">Instruksi Pencetakan</h2>
+            <p class="text-slate-500 text-sm max-w-md leading-relaxed">
+                Pilih Departemen, Tingkat, dan Kelas untuk mencetak form presensi harian. Pastikan data siswa sudah terdaftar pada kelas yang dipilih sebelum melakukan pencetakan.
+            </p>
+        </div>
+
+    </div>
 </body>
 </html>
-<script language="javascript">
-	var spryselect1 = new Spry.Widget.ValidationSelect("departemen");
-	var spryselect4 = new Spry.Widget.ValidationSelect("tingkat");
-	var spryselect5 = new Spry.Widget.ValidationSelect("kelas");
-</script>
+<? CloseDb(); ?>

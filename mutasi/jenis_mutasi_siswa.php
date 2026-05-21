@@ -1,6 +1,4 @@
 <?
- ?>
-<?
 require_once('../include/errorhandler.php');
 require_once('../include/sessioninfo.php');
 require_once('../include/common.php');
@@ -17,134 +15,152 @@ if ($op=="gu7jkds894h98uj32uhi9d8"){
 	$sql_hapus="DELETE FROM jenismutasi WHERE replid='$_REQUEST[replid]'";
 	$result_hapus=QueryDb($sql_hapus);
 }
-	
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-<title>Tambah Jenis Mutasi</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="../style/tooltips.css">
-<script language="javascript" src="../script/tooltips.js"></script>
-<SCRIPT type="text/javascript" language="JavaScript" src="../script/tables.js"></SCRIPT>
-<SCRIPT type="text/javascript" language="javascript" src="../script/tools.js"></script>
-<link href="../style/style.css" rel="stylesheet" type="text/css">
-<script language="javascript">
-
-function tambah() {
-	newWindow('tambah_jenis_mutasi.php','TambahJenisMutasi','400','260','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function edit(replid) {
-	newWindow('ubah_jenis_mutasi.php?replid='+replid, 'UbahJenisMutasi','400','260','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function hapus(replid){
-	if (confirm('Anda yakin akan menghapus jenis mutasi ini?'))
-		document.location.href="jenis_mutasi_siswa.php?op=gu7jkds894h98uj32uhi9d8&replid="+replid;
-}
-
-function cetak() {
-	newWindow('jenis_mutasi_cetak.php', 'CetakJenisMutasi','790','650','resizable=1,scrollbars=1,status=0,toolbar=0')
-}
-
-function refresh() {
-	document.location.reload();
-}
-</script>
-</head>
-<body>
-
-<table border="0" width="100%" height="100%">
-<!-- TABLE BACKGROUND IMAGE -->
-<tr><td align="center" valign="top" background="../images/ico/b_jenismutasi.png" style="margin:0;padding:0;background-repeat:no-repeat;">
-
-<table border="0" width="100%" align="center">
-<!-- TABLE CENTER -->
-<tr height="300">
-  <td align="left" valign="top">
-	<table border="0"width="95%" align="center">
-    <tr>
-    	<td align="right">
-       	<font size="4" face="Verdana, Arial, Helvetica, sans-serif" style="background-color:#ffcc66">&nbsp;</font>&nbsp;<font size="4" face="Verdana, Arial, Helvetica, sans-serif" color="Gray">Jenis-Jenis Mutasi Siswa</font>
-        </td>
-	</tr>
-    <tr>
-    	<td align="right"><a href="../mutasi.php" target="content"> 
-        	<font size="1" face="Verdana" color="#000000"><b>Mutasi</b></font></a>&nbsp>&nbsp <font size="1" face="Verdana" color="#000000"><b>Jenis-Jenis Mutasi Siswa</b></font></td>
-	</tr>
-   	<tr>
-    	<td align="left">&nbsp;</td>
-    </tr>
-	</table>
-	<br /><br />
-    <?	OpenDb();
-    	$queryJenis="SELECT * FROM jenismutasi ORDER BY jenismutasi";
-		$resultJenis=queryDb($queryJenis);
-		if (@mysqli_num_rows($resultJenis) > 0){
-	?>
-    <table border="0" cellpadding="0" cellspacing="0" width="95%" align="center">
-    <!-- TABLE CONTENT -->
-    <tr><td align="right">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenis-Jenis Mutasi Siswa</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Premium Colorful Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <a href="#" onClick="document.location.reload()"><img src="../images/ico/refresh.png" border="0" onMouseOver="showhint('Refresh!', this, event, '50px')"/>&nbsp;Refresh</a>&nbsp;&nbsp;
-    <a href="JavaScript:cetak()"><img src="../images/ico/print.png" border="0" onMouseOver="showhint('Cetak!', this, event, '50px')" />&nbsp;Cetak</a>&nbsp;&nbsp;    
-<?	//if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-	    <a href="JavaScript:tambah()"><img src="../images/ico/tambah.png" border="0" onMouseOver="showhint('Tambah!', this, event, '50px')" />&nbsp;Tambah Jenis Mutasi</a>
-<?	//} ?>    
-    	</td></tr>
-    </table><br />
-  	<table width="95%" border="1" class="tab" align="center" cellpadding="0" cellspacing="0" id="table" bordercolor="#000000">
-  	<tr class="header">
-    	<td width="4%" height="30"><div align="center">No</div></td>
-    	<td width="35%" height="30"><div align="center">Jenis Mutasi </div></td>
-     	<td width="*" height="30"><div align="center">Keterangan </div></td>
-    	 <?	//if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <td width="8%" height="30">&nbsp;</td>
-        <? //} ?>
- 	</tr>
-<?	
-	$a=0;
-  	while($fetchJenis=mysqli_fetch_array($resultJenis)){ ?>
-  	<tr height="25">
-        <td align="center"><?=++$a; ?></td>
-        <td><?=$fetchJenis['jenismutasi']; ?></td>
-        <td><?=$fetchJenis['keterangan']; ?></td>
-        <?	//	if (SI_USER_LEVEL() != $SI_USER_STAFF) {  ?>         
-		<td align="center">
-            <a href="JavaScript:edit(<?=$fetchJenis['replid'] ?>)"><img src="../images/ico/ubah.png" border="0" onMouseOver="showhint('Ubah Jenis Mutasi!', this, event, '80px')" /></a>&nbsp;
-            <a href="JavaScript:hapus(<?=$fetchJenis['replid'] ?>)"><img src="../images/ico/hapus.png" border="0" onMouseOver="showhint('Hapus Jenis Mutasi!', this, event, '80px')"/></a>
-        </td>
-<?		//} ?>  
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 
+    <script language="javascript" src="../script/tools.js"></script>
+    <script language="javascript">
+    function tambah() {
+        newWindow('tambah_jenis_mutasi.php','TambahJenisMutasi','400','260','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+
+    function edit(replid) {
+        newWindow('ubah_jenis_mutasi.php?replid='+replid, 'UbahJenisMutasi','400','260','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+
+    function hapus(replid){
+        if (confirm('Anda yakin akan menghapus jenis mutasi ini?'))
+            document.location.href="jenis_mutasi_siswa.php?op=gu7jkds894h98uj32uhi9d8&replid="+replid;
+    }
+
+    function cetak() {
+        newWindow('jenis_mutasi_cetak.php', 'CetakJenisMutasi','790','650','resizable=1,scrollbars=1,status=0,toolbar=0')
+    }
+    </script>
+</head>
+<body class="bg-green-950 text-slate-800 min-h-screen p-4 md:p-6 select-none overflow-x-hidden">
+    <!-- KARTU KONTEN UTAMA (FLOATING CANVAS) -->
+    <div class="w-full h-[calc(100vh-3rem)] bg-slate-50 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-green-800/30 p-6 md:p-10 flex flex-col">
         
-        <!--<td><img title="Ubah" src="../images/ico/ubah.png" width="16" height="16" onClick="newWindow('ubah_jenis_mutasi.php?replid=<?=$fetchJenis['replid']?>','',410,248,'')" style="cursor:pointer"> <img title="Hapus" src="../images/ico/hapus.png" width="16" height="16" onClick="hapus(<?=$fetchJenis['replid']?>)" style="cursor:pointer"></td>-->
-	</tr>
-<?	} ?>
-	</table>  
-	<script language="javascript">
-		Tables('table', 1, 0);
-	</script>	
-    </td></tr>
-</table><?	} else { ?>
+        <!-- Header & Breadcrumb -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-green-100 shadow-sm flex-1">
+                <div class="bg-emerald-900 text-white p-4 rounded-2xl shadow-lg shadow-emerald-900/30">
+                    <i class="fa-solid fa-tags text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Mutasi Siswa</span>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">JENIS-JENIS MUTASI</h1>
+                </div>
+            </div>
+            
+            <div class="bg-slate-100 px-5 py-3 rounded-2xl border border-slate-200 self-start md:self-center text-xs flex items-center gap-2">
+                <a href="../mutasi.php" target="content" class="text-emerald-700 hover:underline font-semibold">Mutasi</a>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-600 font-medium">Jenis Mutasi</span>
+            </div>
+        </div>
 
-<table width="100%" border="0" align="center">
+        <!-- Action Controls Row -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-2.5">
+                <button onClick="tambah()" class="flex items-center gap-2 bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition-all duration-200 active:scale-95">
+                    <i class="fa-solid fa-plus"></i> Tambah Jenis Mutasi
+                </button>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onClick="document.location.reload()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all">
+                    <i class="fa-solid fa-rotate-right text-emerald-600"></i> Refresh
+                </button>
+                <button onClick="cetak()" class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all">
+                    <i class="fa-solid fa-print text-emerald-600"></i> Cetak
+                </button>
+            </div>
+        </div>
 
-<tr>
-	<td align="center" valign="middle" height="250" colspan="2">
-    	<font size = "2" color ="red"><b>Tidak ditemukan adanya data.
-       <? //if (SI_USER_LEVEL() != $SI_USER_STAFF) { ?>
-        <br />Klik &nbsp;<a href="JavaScript:tambah()" ><font size = "2" color ="green">di sini</font></a>&nbsp;untuk mengisi data baru.
-        <? //} ?>
-        </p></b></font>
-	</td>
-</tr>
-</table>  
-<? } ?> 
-</td></tr>
-<!-- END TABLE BACKGROUND IMAGE -->
-</table>    
+        <!-- Content Area (Table) -->
+        <div class="flex-1 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+            <?	
+            $queryJenis="SELECT * FROM jenismutasi ORDER BY jenismutasi";
+            $resultJenis=queryDb($queryJenis);
+            if (@mysqli_num_rows($resultJenis) > 0){ ?>
+                <div class="overflow-y-auto flex-1 p-1">
+                    <table class="w-full text-left border-separate border-spacing-0">
+                        <thead>
+                            <tr class="bg-slate-50 sticky top-0 z-10">
+                                <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 rounded-tl-2xl">No</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Jenis Mutasi</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Keterangan</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 rounded-tr-2xl text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <?	
+                            $a=0;
+                            while($fetchJenis=mysqli_fetch_array($resultJenis)){ ?>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4 text-xs font-bold text-slate-400"><?=$a+1; ?></td>
+                                    <td class="px-6 py-4 text-xs font-bold text-slate-900"><?=$fetchJenis['jenismutasi']; ?></td>
+                                    <td class="px-6 py-4 text-xs text-slate-600"><?=$fetchJenis['keterangan']; ?></td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button onClick="edit(<?=$fetchJenis['replid'] ?>)" class="p-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors" title="Ubah">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+                                            <button onClick="hapus(<?=$fetchJenis['replid'] ?>)" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors" title="Hapus">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <? $a++; } ?>
+                        </tbody>
+                    </table>
+                </div>
+            <? } else { ?>
+                <div class="flex-1 flex flex-col items-center justify-center p-10 text-center">
+                    <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6 text-red-600">
+                        <i class="fa-solid fa-folder-open text-4xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-2">Data Kosong</h2>
+                    <p class="text-slate-500 text-sm max-w-md leading-relaxed">
+                        Tidak ditemukan adanya data jenis mutasi. Silakan klik tombol "Tambah Jenis Mutasi" untuk membuat data baru.
+                    </p>
+                </div>
+            <? } ?>
+        </div>
 
+    </div>
 </body>
 </html>
 <? CloseDb();?>
