@@ -1,0 +1,39 @@
+<?
+ ?>
+<?php
+$arrjenis = array('SPI', 'SOS');
+$arrnmjenis = array('Spiritual', 'Sosial');
+for($i = 0; $i < count($arrjenis); $i++)
+{
+    $jenis = $arrjenis[$i];
+    $nmjenis = $arrnmjenis[$i];
+
+    $sql = "SELECT komentar, k.predikat
+              FROM komenrapor k 
+             WHERE k.nis = '$nis' 
+               AND k.idsemester = '$semester' 
+               AND k.idkelas = '$kelas'
+               AND k.jenis = '$jenis'";
+    $res2 = QueryDb($sql);
+    $komentar = "";
+    $predikat = "";
+    $nilaiExist = false;
+    if ($row2 = mysqli_fetch_row($res2))
+    {
+        $nilaiExist = true;
+        $komentar = $row2[0];
+        $predikat = PredikatNama($row2[1]);
+    }
+
+
+    echo "<fieldset><legend><strong>Sikap $nmjenis</strong></legend>";
+    echo "<table border='1' width='100%' cellpadding='2' cellspacing='0' style='border-width: 1px; border-collapse: collapse'>";
+    echo "<tr style='height: 80px'>";
+    echo "<td width='20%' align='left' valign='top'>Predikat: $predikat</td>";
+    echo "<td width='*' align='left' valign='top'>$komentar</td>";
+    echo "</tr>";
+    echo "</table>";
+    echo "</fieldset><br>";
+
+}
+?>

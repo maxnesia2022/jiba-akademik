@@ -1,0 +1,85 @@
+<?
+ ?>
+<?
+require_once('../include/errorhandler.php');
+require_once('../include/sessioninfo.php');
+require_once('../include/theme.php');
+require_once('../include/common.php');
+require_once('../include/config.php');
+require_once('../include/db_functions.php');
+require_once('../library/dpupdate.php');
+
+if (isset($_REQUEST['idtingkat']))
+	$idtingkat = $_REQUEST['idtingkat'];
+if (isset($_REQUEST['nip']))
+	$nip = $_REQUEST['nip'];
+if (isset($_REQUEST['id']))
+	$id = $_REQUEST['id'];	
+if (isset($_REQUEST['aspek']))
+	$aspek = $_REQUEST['aspek'];
+
+OpenDb();
+BeginTrans();	
+$success=0;
+
+if ($_REQUEST['action'] == 'Update') 
+{
+	$sql = "DELETE FROM aturangrading 
+			 WHERE idpelajaran = $id AND nipguru = '$nip' AND idtingkat = '$idtingkat' AND dasarpenilaian = '$aspek'";
+	$result = QueryDbTrans($sql,$success);	
+} 
+else 
+{	
+	$sql = "SELECT * FROM guru g, pelajaran j, dasarpenilaian d, tingkat t, aturangrading a 
+			 WHERE a.nipguru=g.nip AND a.idpelajaran = j.replid AND a.dasarpenilaian = d.dasarpenilaian 
+			   AND a.idtingkat = t.replid AND a.idpelajaran = '$id' AND a.nipguru = '$nip' 
+			   AND a.idtingkat = '$idtingkat' AND a.dasarpenilaian = '$aspek'"; 
+	$result = QueryDbTrans($sql,$success);
+	if (mysqli_num_rows($result) > 0) 
+	{
+		CloseDb();		
+		?>
+		<script language="javascript">
+			alert ('Aspek <?=$aspek?> sudah digunakan!');
+			window.self.history.back();
+		</script>
+		<?
+		exit;
+	} 
+} 		
+
+for ($i=1;$i<=10;$i++) 
+{
+	$nmin = $_REQUEST['nmin'.$i];
+	$nmax = $_REQUEST['nmax'.$i];
+	$grade = CQ(strtoupper($_REQUEST['grade'.$i]));
+
+	if (strlen($nmin) > 0 && strlen($nmax) > 0 && strlen($grade) > 0) 
+	{
+		$sql1 = "INSERT INTO aturangrading SET nipguru='$nip',idtingkat='$idtingkat',idpelajaran='$id',dasarpenilaian='$aspek',nmin='$nmin',nmax='$nmax',grade='$grade'";
+		if ($success)
+			QueryDbTrans($sql1,$success);
+	}
+}
+
+if ($success) 
+{ 
+	CommitTrans();
+	CloseDb(); ?>
+	<script language="javascript">
+        opener.document.location.href="aturannilai_content.php?id=<?=$id?>&nip=<?=$nip?>";
+        window.close();
+    </script>
+<?	
+} 
+else 
+{ 
+	RollbackTrans();
+	CloseDb(); ?>
+	<script language="javascript">
+        alert ('Data gagal disimpan !');
+        window.close();
+    </script>
+<?
+}
+?>

@@ -1,0 +1,60 @@
+<?
+ ?>
+<?
+require_once('../include/errorhandler.php');
+require_once('../include/sessioninfo.php');
+require_once('../include/common.php');
+require_once('../include/config.php');
+require_once('../include/db_functions.php');
+require_once('../library/departemen.php');
+$departemen=$_REQUEST['departemen'];
+$jenismutasi=$_REQUEST['jenismutasi'];
+$show=$_REQUEST['show'];
+if ($show==1){
+$tahunakhir=$_REQUEST['tahunakhir'];
+$tahunawal=$_REQUEST['tahunawal'];
+$sql="SELECT m.nis as nis,s.nama as nama,m.tglmutasi as tglmutasi,m.keterangan as keterangan,s.replid as replid FROM mutasisiswa m, siswa s, kelas k, tingkat ti, tahunajaran ta WHERE s.idkelas=k.replid AND k.idtahunajaran=ta.replid AND ta.departemen='$departemen' AND k.idtingkat=ti.replid AND ti.departemen='$departemen' AND YEAR(m.tglmutasi)>='$tahunawal' AND YEAR(m.tglmutasi)<='$tahunakhir' AND m.jenismutasi='$jenismutasi' AND m.nis=s.nis";
+}
+if ($show==2){
+$tahun=$_REQUEST['tahun'];
+$sql="SELECT m.nis as nis,s.nama as nama,m.tglmutasi as tglmutasi,m.keterangan as keterangan,s.replid as replid FROM mutasisiswa m, siswa s, kelas k, tingkat ti, tahunajaran ta WHERE s.idkelas=k.replid AND k.idtahunajaran=ta.replid AND ta.departemen='$departemen' AND k.idtingkat=ti.replid AND ti.departemen='$departemen' AND YEAR(m.tglmutasi)='$tahun' AND m.jenismutasi='$jenismutasi' AND m.nis=s.nis";
+}
+openDb();
+?>
+<!--script language="javascript">
+function tampil(replid) {
+	newWindow('../siswa/siswa_tampil.php?replid='+replid, 'DetailSiswa','800','650','resizable=1,scrollbars=1,status=0,toolbar=0')
+}
+</script-->
+<table width="95%" border="1" class="tab" id="table" align="center">
+  <tr>
+    <td class="header" height="30">No.</td>
+    <td class="header" height="30">NIS</td>
+    <td class="header" height="30">Nama</td>
+    <td class="header" height="30">Tgl Mutasi</td>
+    <td class="header" height="30">Keterangan</td>
+    <td class="header" height="30">&nbsp;</td>
+  </tr>
+  <?
+  $result=QueryDb($sql);
+  $cnt=1;
+  while ($row=@mysqli_fetch_array($result)){
+  ?>
+  <tr>
+    <td height="25"><?=$cnt?></td>
+    <td height="25"><?=$row['nis']?></td>
+    <td height="25"><?=$row['nama']?></td>
+    <td height="25"><?=LongDateFormat($row['tglmutasi'])?></td>
+    <td height="25"><?=$row['keterangan']?></td>
+    <td height="25"><img onClick="tampil('<?=$row['replid']?>')" src="../images/ico/lihat.png"></td>
+  </tr>
+  <?
+  $cnt++;
+  }
+  ?>
+</table>
+<script language="javascript">
+ 	 Tables('table', 1, 0);
+function tampil(replid) {
+	newWindow('../siswa/siswa_tampil.php?replid='+replid, 'DetailSiswa','800','650','resizable=1,scrollbars=1,status=0,toolbar=0')
+</script>

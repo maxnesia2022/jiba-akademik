@@ -1,0 +1,48 @@
+<?
+ ?>
+<?
+require_once('../include/sessioninfo.php');
+require_once('../include/common.php');
+require_once('../include/config.php');
+require_once('../include/db_functions.php');
+
+if (isset($_REQUEST['departemen']))
+	$departemen = $_REQUEST['departemen'];
+
+if (isset($_REQUEST['semester']))
+	$semester = $_REQUEST['semester'];
+
+if (isset($_REQUEST['tingkat']))
+	$tingkat = $_REQUEST['tingkat'];
+
+if (isset($_REQUEST['tahunajaran']))
+	$tahunajaran = $_REQUEST['tahunajaran'];
+
+if (isset($_REQUEST['pelajaran'])) 
+	$pelajaran = $_REQUEST['pelajaran'];
+
+if (isset($_REQUEST['kelas']))
+	$kelas = $_REQUEST['kelas'];
+
+if (isset($_REQUEST['harian']))
+	$harian = $_REQUEST['harian'];
+
+if (isset($_REQUEST['pelajaran']))
+	$pelajaran = $_REQUEST['pelajaran'];
+
+if (isset($_REQUEST['tglmulai']))
+    $tglmulai = $_REQUEST['tglmulai'];
+
+if (isset($_REQUEST['tglakhir']))
+    $tglakhir = $_REQUEST['tglakhir'];
+?>
+<script language="JavaScript" src="../script/tooltips.js"></script>
+<script language="javascript" src="../script/tables.js"></script>
+<script language="javascript" src="../script/validasi.js"></script>
+<script language="javascript" src="../script/tools.js"></script>
+
+<frameset cols="17%,*" border="0" frameborder="0" framespacing="0" >
+<frame src="laporan_nilai_rapor_menu.php?departemen=<?=$departemen?>&semester=<?=$semester?>&tingkat=<?=$tingkat?>&tahunajaran=<?=$tahunajaran?>&kelas=<?=$kelas?>&harian=<?=$harian?>&pelajaran=<?=$pelajaran?>&tglmulai=<?=$tglmulai?>&tglakhir=<?=$tglakhir?>"
+       style="border:1px; border-color:#000000; border-bottom-style:solid">
+<frame src="blank_laporan_rapor_content.php" name="laporan_rapor_content" id="laporan_rapor_content" style="border:1px; border-left-color:#000000; border-left-style:solid">
+</frameset><noframes></noframes>
